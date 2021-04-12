@@ -1,0 +1,115 @@
+1、noSQl的四个分类： 
+	1)key-value  键值对数据库
+	2)Document-Oriented  面向文档数据库
+	3)列存储数据库
+	4)图数据库
+	
+2、redis （Remote Dictionary Server）远程字典服务器， noSQL中的 key-value类型数据库的典型代表
+
+3、redis支持的数据类型： 
+	1)String 
+	2)hash 
+	3)set 
+	4)sorted set
+	5)list
+4、redis可用来设计秒杀、抢红包、聊天的功能
+
+5、redis主要用于两个场景，
+	1)缓存常常用到的数据 比如全局字典之类的
+	2)需要高速读写的场合，比如秒杀抢购，抢红包之类的
+	
+6、redis存储的时候考虑三个方面
+	1)业务数据是否常用?命中率如何？如果命中率底 是否有必要写入内存
+	2)该业务系统是读操作多还是写操作多，频繁需要写入操作也没必要使用缓存
+	3)业务数据大小如果，如果存储几百兆的文件，会给缓存带来压力，有没有必要？
+	
+7、解决短时间内大量的请求问题，达到一定的条件之后异步将数据写入数据库 从而减轻了数据库的压力
+
+8、redis操作命令
+	key:
+	1) del key
+	2) exits key
+	字符串string:
+	3) set key value
+	4) get key
+	5) getSet key value 将给定的key值设置为value 并且return key
+	哈希(散列表hash)：
+	6) hdel key hashKey  删除键为key且hash值为hashKey的值
+	7) hexits key hashKey hash值是否存在
+	8) hset key hashKey value 存值
+	9) hget key hashKey 取单个值
+	10)hkeys key 键为key的所有hash值
+	列表list：特点： 可重复
+	11)Lpush key value  key为列表的键
+	例子： 	Lpush redis redis1 
+			Lpush redis redis2 
+			Lpush redis redis3  
+	列表redis存了redis1 redis2 redis3三个值
+	12)BLpop key timeout 移出并且获取第一个元素
+	13)BRpopo key timeout 移出并且获取最后一个元素
+	以上两个操作会被阻塞，所以需要timeout参数当时间结束会返回nil
+	14)lindex key postion 通过位置取列表的值
+	15)Lpop 移出并且获取第一个元素
+	16)Lpush key value 将一个或多个值插入到列表头部
+	17)Lpushx 将一个或多个值插入到列表头部
+	18)Lrange key start end
+	集合（set）特点：数据不可重复
+	19)Sadd key value 
+	20)Scard key 获取集合的成员数
+	21)SisMenber key value value是不是集合中的成员
+	22)Smembers key 返回所有的集合成员
+	有序集合（zset或sorted set）
+	
+9、redisTemplate操作命令
+	1)redisTemplate.opsForValue();	操作字符串
+		redisTemplate.opsForValue().set("name","tom")
+		redisTemplate.opsForValue().get("name")
+		redisTemplate.opsForValue().multiSet(maps) 
+		redisTemplate.opsForValue().multiSet(maps)
+		
+	2)redisTemplate.opsForHash();	操作hash
+		redisTemplate.opsForHash().putAll("redisHash1",testMap)
+		redisTemplate.opsForHash().delete("redisHash","name") （key, hashkey）
+		redisTemplate.opsForHash().hasKey("redisHash","age") (key, hasKey)
+		redisTemplate.opsForHash().get(key, hasKey)
+		redisTemplate.opsForHash().keys(key)
+		redisTemplate.opsForHash().size(key)
+		redisTemplate.opsForHash().put(key, hasKey, value)
+		redisTemplate.opsForHash().values(key)
+		
+	3)redisTemplate.opsForList();	操作list
+		redisTemplate.opsForList().size("list")
+		redisTemplate.opsForList().leftPush("list","java")
+		String[] stringarrays = new String[]{"1","2","3"};
+		redisTemplate.opsForList().leftPushAll("listarray",stringarrays);
+		redisTemplate.opsForList().rightPush("listRight","java");
+		redisTemplate.opsForList().rightPushAll("listarrayright",stringarrays);
+		redisTemplate.opsForList().rightPop("list")
+		redisTemplate.opsForList().range("list",0,-1)
+		
+	4)redisTemplate.opsForSet();	操作set	
+		set是String类型的有序集合，集合成员唯一意味着不会出现重复的数据
+		redis中的集合都是通过哈希实现的， 所有删除，添加的复杂度都是o(1)
+		redisTemplate.opsForSet().add(key, value1,value2,...);
+		String[] strarrays = new String[]{"strarr1","sgtarr2"};
+		redisTemplate.opsForSet().remove(key, strarrays)
+		redisTemplate.opsForSet().pop（key） 随机删除并返回集合中的一个元素
+		redisTemplate.opsForSet().size(key)
+		redisTemplate.opsForSet().isMember(key, value)
+		
+	5)redisTemplate.opsForZSet();	操作有序set
+		redisTemplate.opsForZSet().add()
+		redisTemplate.opsForZSet().remove(key, value)从有序集合中移除一个或者多个元素
+		redisTemplate.opsForZSet().rank(key, value)
+		redisTemplate.opsForZSet().reverseRank(key, value) 返回有序集合的排名
+		redisTemplate.opsForZSet().range(key, start, end)
+		
+10、TimeUnit是java.util.concurrent包下面的一个类，表示给定单元粒度的时间段
+	常用的颗粒度
+	TimeUnit.DAYS //天
+	TimeUnit.HOURS //小时
+	TimeUnit.MINUTES //分钟
+	TimeUnit.SECONDS //秒
+	TimeUnit.MILLISECONDS //毫秒
+	
+11、
